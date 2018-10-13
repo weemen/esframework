@@ -1,6 +1,10 @@
 {
-  "analysis_directories": [
-    "./esframework"
+  "source_directories": [
+    "esframework/domain",
+    "esframework/repository",
+    "esframework/store"
   ],
-  "search_path": ["./esframework"]
+  "search_path": ["./esframework"],
+  "binary": "/Users/leonweemen/PycharmProjects/eventsourcing/venv/bin/pyre.bin",
+  "typeshed": "/Users/leonweemen/PycharmProjects/eventsourcing/venv/lib/pyre_check/typeshed/"
 }

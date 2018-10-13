@@ -1,5 +1,6 @@
 import abc
 import re
+from typing import List
 
 
 class Event(object, metaclass=abc.ABCMeta):
@@ -21,7 +22,7 @@ class AggregateRoot(object):
     def __init__(self):
         self.__uncommitted_events = []
 
-    def apply(self, event):
+    def apply(self, event: Event):
         self.__uncommitted_events.append(event)
         self.apply_event(event)
 
@@ -32,13 +33,13 @@ class AggregateRoot(object):
 
         self.__getattribute__(method)(event)
 
-    def get_uncommitted_events(self):
+    def get_uncommitted_events(self) -> List[Event]:
         return self.__uncommitted_events
 
     def clear_uncommited_events(self):
         self.__uncommitted_events = []
 
-    def initialize_state(self, list_of_events):
+    def initialize_state(self, list_of_events: List[Event]):
         for event in list_of_events:
             self.apply_event(event)
 

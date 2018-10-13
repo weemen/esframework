@@ -3,3 +3,4 @@ venv
 *.egg-info
 .pyre
 .pytest_cache
+.coverage

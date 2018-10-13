@@ -11,7 +11,7 @@ class Event(object, metaclass=abc.ABCMeta):
 
     @staticmethod
     @abc.abstractmethod
-    def deserialize(eventdata):
+    def deserialize(event_data):
         raise NotImplementedError('an event must be deserializable')
 
 

@@ -66,7 +66,7 @@ class TestAggregateRoot(unittest.TestCase):
         self.assertIsInstance(aggregate, MyTestAggregate)
         self.assertEqual(len(aggregate.get_uncommitted_events()), 1)
 
-        aggregate.clear_uncommited_events()
+        aggregate.clear_uncommitted_events()
         self.assertEqual(len(aggregate.get_uncommitted_events()), 0)
 
     def test_it_can_restore_state_with_one_event(self):

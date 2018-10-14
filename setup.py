@@ -16,7 +16,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
 
-install_requires = []
+install_requires = ['six']
 testing_requires = ['pytest', 'pylint', 'flake8', 'pyre-check']
 
 setup(

@@ -56,6 +56,6 @@ class AggregateRoot(object):
             self.apply_event(event)
 
     @abc.abstractmethod
-    def get_aggregate_root_id():
+    def get_aggregate_root_id(self):
         """ Every aggregate should have a function to get the aggregate id """
         raise NotImplementedError('Every aggregate must have an unique id!')

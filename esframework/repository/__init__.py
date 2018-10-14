@@ -1,5 +1,6 @@
 """ Imports """
 import abc
+from esframework.domain import AggregateRoot
 
 
 class Repository(object, metaclass=abc.ABCMeta):
@@ -13,12 +14,12 @@ class Repository(object, metaclass=abc.ABCMeta):
         self.__store = store
 
     @abc.abstractmethod
-    def load(self, aggregate_root):
+    def load(self, aggregate_root: AggregateRoot):
         """ Should be implemented by child class for loading from storage """
         raise NotImplementedError('Every repository must have an load method.')
 
     @abc.abstractmethod
-    def save(self, aggregate_root):
+    def save(self, aggregate_root: AggregateRoot):
         """ Should be implemented by child class for saving to storage """
         raise NotImplementedError('Every repository must have an save method.')
 
@@ -26,8 +27,8 @@ class Repository(object, metaclass=abc.ABCMeta):
 class InMemoryRepository(Repository):
     """ An in Memory repository """
 
-    def load(self, aggregate_root):
+    def load(self, aggregate_root: AggregateRoot):
         pass
 
-    def save(self, aggregate_root):
+    def save(self, aggregate_root: AggregateRoot):
         pass

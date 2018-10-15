@@ -22,21 +22,24 @@ class Store(object):
 class InMemoryStore(Store):
     """ An in memory event store """
 
-    __store = []
+    __store = {}
+
+    def __init__(self):
+        self.__store = {}
 
     def load(self, aggregate_root_id: str) -> List[Event]:
         """ Load stream from memory """
-        try:
-            return self.__store[aggregate_root_id]
-        except ValueError:
+        if aggregate_root_id not in self.__store:
             raise AggregateRootIdNotFoundError(
                 'Aggregate root id does not exist',
                 aggregate_root_id)
 
+        return self.__store[aggregate_root_id]
+
     def save(self, event_stream: List[Event], aggregate_root_id: str):
         """ Store / Append stream to memory """
 
-        if self.__store[aggregate_root_id] is None:
+        if aggregate_root_id not in self.__store:
             self.__store[aggregate_root_id] = event_stream
         else:
-            self.__store[aggregate_root_id].append(event_stream)
+            self.__store[aggregate_root_id] += event_stream

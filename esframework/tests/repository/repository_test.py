@@ -1,6 +1,5 @@
 """ imports """
 import unittest
-from pytest import raises
 from esframework.domain import (AggregateRoot, Event)
 from esframework.repository import DefaultRepository
 from esframework.store import InMemoryStore

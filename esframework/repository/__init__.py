@@ -48,4 +48,4 @@ class DefaultRepository(Repository):
         uncommitted_events = aggregate_root.get_uncommitted_events()
         self._store.save(uncommitted_events,
                          aggregate_root.get_aggregate_root_id())
-        aggregate_root.clear_uncommited_events()
+        aggregate_root.clear_uncommitted_events()

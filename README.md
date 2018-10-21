@@ -6,3 +6,13 @@ Scrutenizer CI:
 
 Travis status:  
 [![Build Status](https://travis-ci.org/weemen/esframwork.svg?branch=master)](https://travis-ci.org/weemen/esframwork)
+
+
+
+TODO:  
+- Tooling: Aggregate Helpers
+- Proper versioning checks
+- Documentation
+- EventStore Support
+- SQLAlchemy Support ??
+- Lambda / Kineses / Dynamo Support??

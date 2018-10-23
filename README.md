@@ -1,6 +1,11 @@
 ### ESframework
 An eventsourcing framework heavily inspired by Broadway CQRS / Eventsourcing framework.
 
+
+This package is meant to make Eventsourcing and CQRS a lot easier with python.
+Within this package you can find tooling for setting up aggregate roots, tooling
+to test your aggregate roots and of course you can find examples and proper documentation.
+
 #### Build status
 Scrutenizer CI:  
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/weemen/esframwork/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/weemen/esframwork/?branch=master)  

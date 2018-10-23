@@ -2,7 +2,7 @@
 This is a step by guide in helping to use this package. Let's start 
 with step 1:
 
-##### Making a domain model
+##### Step 1: Making a domain model
 The very first step of making a proper domain model doesn't start 
 with using this package. It actually starts with figuring out how
 your domain actually works. There are different techniques in doing
@@ -19,6 +19,6 @@ Event names are always past tense (the event has happened so its
 a fact of life)
 
 
-##### Digitalize a domain model
+##### Step 2: Digitalize a domain model
 Now it's time to bring ESframework into action. We model that we made
 on post its will now be converted to a digital version.

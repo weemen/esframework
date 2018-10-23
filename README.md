@@ -10,7 +10,7 @@ Travis status:
 [![Build Status](https://travis-ci.org/weemen/esframwork.svg?branch=master)](https://travis-ci.org/weemen/esframwork)
 
 #### Documentation
-Click [here](docs/domaine.md) to go to the documentation
+Click [here](domain.md) to go to the documentation
 
 
 #### Todo:

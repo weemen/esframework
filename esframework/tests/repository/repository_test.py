@@ -1,6 +1,6 @@
 """ imports """
 import unittest
-from esframework.domain import (AggregateRoot, Event)
+from esframework.domain import (AggregateRoot, DomainEvent)
 from esframework.repository import DefaultRepository
 from esframework.store import InMemoryStore
 
@@ -29,7 +29,7 @@ class MyTestAggregate(AggregateRoot):
         return self.__aggregate_root_id
 
 
-class EventA(Event):
+class EventA(DomainEvent):
     """ Dummy EventA class for testing """
 
     def __init__(self, aggregate_root_id, an_event_property):

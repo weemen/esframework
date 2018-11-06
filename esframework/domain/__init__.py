@@ -4,7 +4,7 @@ import re
 from typing import List
 
 
-class Event(object, metaclass=abc.ABCMeta):
+class DomainEvent(object, metaclass=abc.ABCMeta):
     """ Abstract event class with serialize and deserialize method """
 
     @abc.abstractmethod
@@ -27,7 +27,7 @@ class AggregateRoot(object):
     def __init__(self):
         self.__uncommitted_events = []
 
-    def apply(self, event: Event):
+    def apply(self, event: DomainEvent):
         """ Apply an event and put it to the uncommitted events list """
         self.__uncommitted_events.append(event)
         self.apply_event(event)
@@ -40,7 +40,7 @@ class AggregateRoot(object):
 
         self.__getattribute__(method)(event)
 
-    def get_uncommitted_events(self) -> List[Event]:
+    def get_uncommitted_events(self) -> List[DomainEvent]:
         """ returns the list of uncommitted events """
         return self.__uncommitted_events
 
@@ -48,7 +48,7 @@ class AggregateRoot(object):
         """ clear the list of uncommitted events """
         self.__uncommitted_events = []
 
-    def initialize_state(self, list_of_events: List[Event]):
+    def initialize_state(self, list_of_events: List[DomainEvent]):
         """ initializes the default state of the aggregate root based on the
         list of incoming events
         """

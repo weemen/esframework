@@ -1,13 +1,13 @@
 """ init.py """
 import unittest
 from pytest import raises
-from esframework.domain import (AggregateRoot, Event)
+from esframework.domain import (AggregateRoot, DomainEvent)
 from esframework.exceptions import (WrongExceptionRaised,
                                     InvalidMessageException)
 from esframework.tooling.aggregate import AggregateRootTestCase
 
 
-class EventA(Event):
+class EventA(DomainEvent):
     """ Dummy EventA class for testing """
 
     def __init__(self, aggregate_root_id, an_event_property):

@@ -41,7 +41,7 @@ class AggregateRootTestCase(unittest.TestCase):
         actualValue = self.__aggregate_root.__dict__.get(
             '_' + className + property)
 
-        self.assertEqual(actualValue, value)
+        self.assertEqual(value, actualValue)
 
     def expects_exception(
             self, exception: Exception, message: str, method: str, *args):

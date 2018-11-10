@@ -27,18 +27,21 @@ class Game(AggregateRoot):
         return game
 
     def apply_game_started(self, event: GameStarted):
-        """ Apply GameStarted on the aggregate root """
+        """ Apply GameStarted on the aggregate root, reset the complete game"""
         self.__aggregate_root_id = event.get_aggregate_root_id()
         self.__active_game = True
         self.__tries = event.get_tries()
         self.__word = event.get_word()
+        self.__letters_guessed = []
+        self.__letters_not_guessed = []
+        self.__word_guessed = ""
 
     def guess_letter(self, command: GuessLetter):
         """ Try to apply LetterGuessed or LetterNotGuessed """
         self.basic_game_preconditions()
 
         """ Apply either one the two events """
-        if command.get_letter() in self.__word.split():
+        if command.get_letter() in list(self.__word):
             self.apply_letter_guessed(
                 LetterGuessed(
                     command.get_aggregate_root_id(),
@@ -60,6 +63,7 @@ class Game(AggregateRoot):
     def apply_letter_not_guessed(self, event: LetterNotGuessed):
         """ Apply LetterNotGuessed on the aggregate root """
         self.__letters_not_guessed.append(event.get_letter())
+        self.__tries -= 1
 
     def guess_word(self, command: GuessWord):
         """ Check preconditions try to apply WordGuessed """
@@ -94,7 +98,7 @@ class Game(AggregateRoot):
 
     def basic_game_preconditions(self):
         if not self.__active_game:
-            raise DomainException("Game must be active, before guessing lettings")
+            raise DomainException("You are game over!")
 
         if self.__tries <= 0:
             raise DomainException("Game doesn't have any tries left.")

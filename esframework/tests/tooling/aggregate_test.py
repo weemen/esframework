@@ -132,7 +132,7 @@ class AggregateRootTestCaseTest(unittest.TestCase):
                 testcase.assert_aggregate_property_state_equal_to(
                     '__an_event_property', 'incorrect_value'),
                 None)
-        msg = "'myValue' != 'incorrect_value'\n- myValue\n+ incorrect_value\n"
+        msg = "'incorrect_value' != 'myValue'\n- incorrect_value\n+ myValue\n"
         assert msg in str(excinfo.value)
 
     def test_it_cant_assert_aggregate_properties_if_aggregate_is_not_set(self):

@@ -15,7 +15,7 @@ class Game(AggregateRoot):
     __word_guessed = ""
 
     @staticmethod
-    def game_started(command: StartGame):
+    def start_game(command: StartGame):
         """ Creates Game and will try to apply GameStarted """
         game = Game()
         game.apply(GameStarted(
@@ -33,7 +33,7 @@ class Game(AggregateRoot):
         self.__tries = event.get_tries()
         self.__word = event.get_word()
 
-    def letter_guessed(self, command: GuessLetter):
+    def guess_letter(self, command: GuessLetter):
         """ Try to apply LetterGuessed or LetterNotGuessed """
         self.basic_game_preconditions()
 
@@ -61,7 +61,7 @@ class Game(AggregateRoot):
         """ Apply LetterNotGuessed on the aggregate root """
         self.__letters_not_guessed.append(event.get_letter())
 
-    def word_guessed(self, command: GuessWord):
+    def guess_word(self, command: GuessWord):
         """ Check preconditions try to apply WordGuessed """
         self.basic_game_preconditions()
         self.apply(

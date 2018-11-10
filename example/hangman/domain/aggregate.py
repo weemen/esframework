@@ -1,4 +1,5 @@
 from esframework.domain import AggregateRoot
+from example.hangman.application.commands import StartGame, GuessLetter, GuessWord
 from example.hangman.domain.events import GameStarted, LetterGuessed, LetterNotGuessed, WordGuessed, GameWon, GameLost
 from example.hangman.exceptions import DomainException
 
@@ -14,10 +15,14 @@ class Game(AggregateRoot):
     __word_guessed = ""
 
     @staticmethod
-    def game_started(aggregate_root_id):
+    def game_started(command: StartGame):
         """ Creates Game and will try to apply GameStarted """
         game = Game()
-        game.apply(GameStarted(aggregate_root_id))
+        game.apply(GameStarted(
+            aggregate_root_id=command.get_aggregate_root_id(),
+            tries=command.get_tries(),
+            word=command.get_word()
+        ))
 
         return game
 
@@ -28,15 +33,25 @@ class Game(AggregateRoot):
         self.__tries = event.get_tries()
         self.__word = event.get_word()
 
-    def letter_guessed(self, aggregate_root_id):
+    def letter_guessed(self, command: GuessLetter):
         """ Try to apply LetterGuessed or LetterNotGuessed """
         self.basic_game_preconditions()
 
         """ Apply either one the two events """
-        if 'a' in self.__word.split():
-            self.apply_letter_guessed(LetterGuessed(aggregate_root_id, 'a'))
+        if command.get_letter() in self.__word.split():
+            self.apply_letter_guessed(
+                LetterGuessed(
+                    command.get_aggregate_root_id(),
+                    command.get_letter()
+                )
+            )
         else:
-            self.apply_letter_not_guessed(LetterNotGuessed(aggregate_root_id, 'a'))
+            self.apply_letter_not_guessed(
+                LetterNotGuessed(
+                    command.get_aggregate_root_id(),
+                    command.get_letter()
+                )
+            )
 
     def apply_letter_guessed(self, event: LetterGuessed):
         """ Apply LetterGuessed on the aggregate root """
@@ -46,15 +61,22 @@ class Game(AggregateRoot):
         """ Apply LetterNotGuessed on the aggregate root """
         self.__letters_not_guessed.append(event.get_letter())
 
-    def word_guessed(self, aggregate_root_id):
+    def word_guessed(self, command: GuessWord):
         """ Check preconditions try to apply WordGuessed """
         self.basic_game_preconditions()
-        self.apply(WordGuessed(aggregate_root_id, 'word'))
+        self.apply(
+            WordGuessed(
+                command.get_aggregate_root_id(),
+                command.get_word()
+            )
+        )
 
         if 'word' == self.__word:
-            self.apply_game_won(GameWon(aggregate_root_id))
+            self.apply_game_won(
+                GameWon(command.get_aggregate_root_id()))
         else:
-            self.apply_game_lost(GameLost(aggregate_root_id))
+            self.apply_game_lost(
+                GameLost(command.get_aggregate_root_id()))
 
     def apply_word_guessed(self, event: WordGuessed):
         """ Apply WordGuessed on the aggregate root """

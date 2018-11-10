@@ -124,7 +124,27 @@ class GameTest(AggregateRootTestCase):
             .assert_aggregate_property_state_equal_to('__word_guessed', "pony")
 
     def test_it_can_win_by_guessing_all_letters(self):
-        pass
+        aggregate_id = '297F2CE9-CB4F-4BE2-8C86-21B911FC2663'
+        aggregate = Game.start_game(StartGame(aggregate_id, 'bird', 9))
+
+        aggregate.guess_letter(GuessLetter(aggregate_id, 'x'))
+        aggregate.guess_letter(GuessLetter(aggregate_id, 'r'))
+        aggregate.guess_letter(GuessLetter(aggregate_id, 'd'))
+        aggregate.guess_letter(GuessLetter(aggregate_id, 'b'))
+        aggregate.guess_letter(GuessLetter(aggregate_id, 'i'))
+
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__tries', 8)
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__word', 'bird')
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__active_game', False)
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__letters_guessed', ['r','d','b','i'])
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__letters_not_guessed', ['x'])
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__word_guessed', "")
 
     def test_it_cant_guess_letters_when_no_tries_are_left(self):
         aggregate_id = '297F2CE9-CB4F-4BE2-8C86-21B911FC2663'

@@ -60,6 +60,9 @@ class Game(AggregateRoot):
         """ Apply LetterGuessed on the aggregate root """
         self.__letters_guessed.append(event.get_letter())
 
+        if len(set(self.__word)) == len(set(self.__letters_guessed)):
+            self.__active_game = False
+
     def apply_letter_not_guessed(self, event: LetterNotGuessed):
         """ Apply LetterNotGuessed on the aggregate root """
         self.__letters_not_guessed.append(event.get_letter())

@@ -134,3 +134,98 @@ Commands are plain stright forwards objects that will given to the events.
    
    As you can see in the example above I'll keep immutability and I do 
    validation. I created a new folder for exceptions (called: "exceptions").
+   
+ - As in a proper eventstorming session it's now time to implement all the
+ requirements that are needed to turn commands into events. It's time to
+ create the aggregate root. In the domain folder we will create a file called
+ "aggregate.py"  
+   
+   Aggregates are the glue between command and events. Aggregates has the
+   current state which is the summation of all events. In esframework aggregates
+   are build up in this way:
+   - a static method that creates an instance of the object
+   - a method foreach command to check if we can turn this command into an event
+   - a method for event that affects the aggregate root (the apply_ methods).  
+     
+   Every aggregate root should comply to the following rules:
+   - members are private
+   - apply_ methods must be based on the event names. The classname of the event
+   will be translated from CamelCase to underscores!! Please keep this in mind
+   during development.
+   - apply methods are meant changing the aggregate root
+   - non apply methods are meant for Commands to check if we can turn them into
+   events.
+     
+   
+   ```python
+   class Game(AggregateRoot):
+    """ Game is an aggregate root """
+    __aggregate_root_id = None
+    __active_game = False
+    __tries = 0
+    __word = ""
+    __letters_guessed = []
+    __letters_not_guessed = []
+    __word_guessed = ""
+
+    @staticmethod
+    def start_game(command: StartGame):
+        """ Creates Game and will try to apply GameStarted """
+        game = Game()
+        game.apply(GameStarted(
+            aggregate_root_id=command.get_aggregate_root_id(),
+            tries=command.get_tries(),
+            word=command.get_word()
+        ))
+
+        return game
+
+    def apply_game_started(self, event: GameStarted):
+        """ Apply GameStarted on the aggregate root, reset the complete game"""
+        self.__aggregate_root_id = event.get_aggregate_root_id()
+        self.__active_game = True
+        self.__tries = event.get_tries()
+        self.__word = event.get_word()
+        self.__letters_guessed = []
+        self.__letters_not_guessed = []
+        self.__word_guessed = ""
+
+    def guess_letter(self, command: GuessLetter):
+        """ Try to apply LetterGuessed or LetterNotGuessed """
+        self.basic_game_preconditions()
+
+        """ Apply either one the two events """
+        if command.get_letter() in list(self.__word):
+            self.apply_letter_guessed(
+                LetterGuessed(
+                    command.get_aggregate_root_id(),
+                    command.get_letter()
+                )
+            )
+        else:
+            self.apply_letter_not_guessed(
+                LetterNotGuessed(
+                    command.get_aggregate_root_id(),
+                    command.get_letter()
+                )
+            )
+
+    def apply_letter_guessed(self, event: LetterGuessed):
+        """ Apply LetterGuessed on the aggregate root """
+        self.__letters_guessed.append(event.get_letter())
+
+        if len(set(self.__word)) == len(set(self.__letters_guessed)):
+            self.__active_game = False
+
+    def apply_letter_not_guessed(self, event: LetterNotGuessed):
+        """ Apply LetterNotGuessed on the aggregate root """
+        self.__letters_not_guessed.append(event.get_letter())
+        self.__tries -= 1
+   ```
+   
+   In the example above is not the full aggregate root, check that one out
+   in the [example folder](../example). Aggregate roots always extends from
+   the [AggregateRoot](../esframework/domain/__init__.py) class. This class
+   helps you with processing uncommitted events and apply events when loaded
+   from the event store. I would be a shame if you have to worry about those
+   things.

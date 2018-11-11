@@ -229,3 +229,66 @@ Commands are plain stright forwards objects that will given to the events.
    helps you with processing uncommitted events and apply events when loaded
    from the event store. I would be a shame if you have to worry about those
    things.
+
+##### Step 3: Testing the model
+Off course we can't do this untested but you might think: how are we going to
+test this? Well luckily there is a little bit of tooling for that. Let's check
+it out. Next to your domain folder create a folder called "tests". In this
+folder we create a folder "domain". In that folder we add a test file.
+
+A good thing that I have been taught to do is to start every test case with: 
+"test_it_can_" and then the case you want to test. This is something you will
+see in the example below as well. The other thing that you might notice is that
+the test class is extended from 
+[AggregateRootTestCase](../esframework/tooling/aggregate.py). This class deals
+for you with all the private members to make testing easy. You can easily build
+test scenario's without too many worries. 
+
+```python
+class GameTest(AggregateRootTestCase):
+
+    def test_it_can_start_a_game(self):
+        game_start_command = StartGame(
+            '297F2CE9-CB4F-4BE2-8C86-21B911FC2663',
+            'birthday',
+            9
+        )
+
+        aggregate = Game.start_game(game_start_command)
+        self.withAggregate(aggregate)\
+            .assert_aggregate_property_state_equal_to('__tries', 9)
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__word', 'birthday')
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__active_game', True)
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__letters_guessed', [])
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__letters_not_guessed', [])
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__word_guessed', "")
+
+    def test_it_can_guess_a_letter(self):
+        aggregate_id = '297F2CE9-CB4F-4BE2-8C86-21B911FC2663'
+
+        aggregate = Game.start_game(StartGame(aggregate_id, 'birthday', 9))
+        aggregate.guess_letter(GuessLetter(aggregate_id, 'r'))
+
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__tries', 9)
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__word', 'birthday')
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__active_game', True)
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__letters_guessed', ['r'])
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__letters_not_guessed', [])
+        self.withAggregate(aggregate) \
+            .assert_aggregate_property_state_equal_to('__word_guessed', "")
+```
+
+As you can see above, testing is fairly easy. Create your aggregate, create
+your commands and execute :). You can see clearly how the AggregateRootTestCase
+helps you here. Assign the aggregate with the "withAggregate" method ()which is 
+fluid) and the next step is to assert the aggregate state.

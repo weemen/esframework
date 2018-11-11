@@ -2,7 +2,7 @@
 import unittest
 from pytest import raises
 from typing import List
-from esframework.domain import (AggregateRoot, Event)
+from esframework.domain import (AggregateRoot, DomainEvent)
 from esframework.exceptions import (
     InvalidMessageException, WrongExceptionRaised)
 
@@ -18,7 +18,7 @@ class AggregateRootTestCase(unittest.TestCase):
         self.__aggregate_root = aggregate
         return self
 
-    def has_eventstream(self, list_of_events: List[Event]):
+    def has_eventstream(self, list_of_events: List[DomainEvent]):
         """ has eventstream """
         if self.__aggregate_root is None:
             raise RuntimeError("Aggregate root is not set!")
@@ -26,8 +26,8 @@ class AggregateRootTestCase(unittest.TestCase):
         self.__eventstream_at_initialisation = list_of_events
         return self
 
-    def then_add_event(self, event: Event):
-        """ Apply Event on Aggregate """
+    def then_add_event(self, event: DomainEvent):
+        """ Apply DomainEvent on Aggregate """
         self.eventstream_to_apply.append(event)
         return self
 
@@ -41,7 +41,7 @@ class AggregateRootTestCase(unittest.TestCase):
         actualValue = self.__aggregate_root.__dict__.get(
             '_' + className + property)
 
-        self.assertEqual(actualValue, value)
+        self.assertEqual(value, actualValue)
 
     def expects_exception(
             self, exception: Exception, message: str, method: str, *args):
@@ -75,7 +75,7 @@ class AggregateRootTestCase(unittest.TestCase):
         return self
 
     def assert_aggregate_root_eventstream_equal_to(
-            self, eventstream: List[Event]):
+            self, eventstream: List[DomainEvent]):
         """ asserting that eventstream of aggregate root is equal to the
         eventstream given """
 

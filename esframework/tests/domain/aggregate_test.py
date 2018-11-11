@@ -1,10 +1,10 @@
 """ Imports """
 import unittest
 
-from esframework.domain import (AggregateRoot, Event)
+from esframework.domain import (AggregateRoot, DomainEvent)
 
 
-class EventA(Event):
+class EventA(DomainEvent):
     """ Dummy EventA class for testing """
 
     def __init__(self, aggregate_root_id, an_event_property):

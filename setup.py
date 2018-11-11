@@ -55,10 +55,7 @@ setup(
     ],
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=install_requires,
-    extras_require={  # Optional
-        'dev': testing_requires,
-        'test': testing_requires
-    },
+    tests_require=testing_requires,
 
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow

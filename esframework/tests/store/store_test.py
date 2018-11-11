@@ -2,12 +2,12 @@
 import unittest
 from pytest import raises
 
-from esframework.domain import Event
+from esframework.domain import DomainEvent
 from esframework.exceptions import AggregateRootIdNotFoundError
 from esframework.store import InMemoryStore
 
 
-class EventA(Event):
+class EventA(DomainEvent):
     """ Dummy EventA class for testing """
 
     def __init__(self, aggregate_root_id, an_event_property):

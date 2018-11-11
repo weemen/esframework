@@ -1,7 +1,7 @@
 """ Imports """
 import abc
 from typing import List
-from esframework.domain import Event
+from esframework.domain import DomainEvent
 from esframework.exceptions import AggregateRootIdNotFoundError
 
 
@@ -14,7 +14,7 @@ class Store(object):
         raise NotImplementedError('Every repository must have an load method.')
 
     @abc.abstractmethod
-    def save(self, event_stream: List[Event], aggregate_root_id: str):
+    def save(self, event_stream: List[DomainEvent], aggregate_root_id: str):
         """ Should be implemented by child class for saving to storage """
         raise NotImplementedError('Every repository must have an save method.')
 
@@ -27,7 +27,7 @@ class InMemoryStore(Store):
     def __init__(self):
         self.__store = {}
 
-    def load(self, aggregate_root_id: str) -> List[Event]:
+    def load(self, aggregate_root_id: str) -> List[DomainEvent]:
         """ Load stream from memory """
         if aggregate_root_id not in self.__store:
             raise AggregateRootIdNotFoundError(
@@ -36,7 +36,7 @@ class InMemoryStore(Store):
 
         return self.__store[aggregate_root_id]
 
-    def save(self, event_stream: List[Event], aggregate_root_id: str):
+    def save(self, event_stream: List[DomainEvent], aggregate_root_id: str):
         """ Store / Append stream to memory """
 
         if aggregate_root_id not in self.__store:

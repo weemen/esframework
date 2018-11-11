@@ -1,13 +1,13 @@
 """ init.py """
 import unittest
 from pytest import raises
-from esframework.domain import (AggregateRoot, Event)
+from esframework.domain import (AggregateRoot, DomainEvent)
 from esframework.exceptions import (WrongExceptionRaised,
                                     InvalidMessageException)
 from esframework.tooling.aggregate import AggregateRootTestCase
 
 
-class EventA(Event):
+class EventA(DomainEvent):
     """ Dummy EventA class for testing """
 
     def __init__(self, aggregate_root_id, an_event_property):
@@ -132,7 +132,7 @@ class AggregateRootTestCaseTest(unittest.TestCase):
                 testcase.assert_aggregate_property_state_equal_to(
                     '__an_event_property', 'incorrect_value'),
                 None)
-        msg = "'myValue' != 'incorrect_value'\n- myValue\n+ incorrect_value\n"
+        msg = "'incorrect_value' != 'myValue'\n- incorrect_value\n+ myValue\n"
         assert msg in str(excinfo.value)
 
     def test_it_cant_assert_aggregate_properties_if_aggregate_is_not_set(self):

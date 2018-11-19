@@ -39,6 +39,7 @@ class InMemoryStore(Store):
     def save(self, event_stream: List[DomainEvent], aggregate_root_id: str):
         """ Store / Append stream to memory """
 
+        """ overwriting the event stream is not ok """
         if aggregate_root_id not in self.__store:
             self.__store[aggregate_root_id] = event_stream
         else:

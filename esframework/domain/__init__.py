@@ -4,7 +4,21 @@ import re
 from typing import List
 
 
-class DomainEvent(object, metaclass=abc.ABCMeta):
+class Event(object, metaclass=abc.ABCMeta):
+
+    __version = None
+
+    def __init__(self):
+        self.__version = None
+
+    def set_version(self, version_number: int):
+        self.__version = version_number
+
+    def get_version(self):
+        return self.__version
+
+
+class DomainEvent(Event):
     """ Abstract event class with serialize and deserialize method """
 
     @abc.abstractmethod
@@ -21,14 +35,18 @@ class DomainEvent(object, metaclass=abc.ABCMeta):
 
 class AggregateRoot(object):
     """ A base aggregate root class with basics already implemented """
-
+    __loaded_version = 0
     __uncommitted_events = []
 
     def __init__(self):
+        __loaded_version = 0
         self.__uncommitted_events = []
 
     def apply(self, event: DomainEvent):
         """ Apply an event and put it to the uncommitted events list """
+        event_version = self.__loaded_version + len(self.__uncommitted_events) + 1
+        event.set_version(event_version)
+
         self.__uncommitted_events.append(event)
         self.apply_event(event)
 
@@ -54,6 +72,11 @@ class AggregateRoot(object):
         """
         for event in list_of_events:
             self.apply_event(event)
+            self.__loaded_version += 1
+
+    def get_version(self) -> int:
+        """ returns the initialized state version """
+        return self.__loaded_version
 
     @abc.abstractmethod
     def get_aggregate_root_id(self):

@@ -3,6 +3,7 @@ import abc
 
 from esframework import import_path
 from esframework.domain import AggregateRoot
+from esframework.exceptions import AggregateRootIdNotFoundError, AggregateRootOutOfSyncError
 from esframework.store import Store
 
 
@@ -45,7 +46,27 @@ class DefaultRepository(Repository):
     def save(self, aggregate_root: AggregateRoot):
         """ Get the uncommitted and append it to the eventstream in the store
         """
+
         uncommitted_events = aggregate_root.get_uncommitted_events()
-        self._store.save(uncommitted_events,
-                         aggregate_root.get_aggregate_root_id())
-        aggregate_root.clear_uncommitted_events()
+
+        try:
+            aggr_from_store = self.load(aggregate_root.get_aggregate_root_id())
+            if not self.is_outdated(
+                    aggr_from_store.get_version(),
+                    uncommitted_events[0].get_version()):
+                self._store.save(uncommitted_events,
+                                 aggregate_root.get_aggregate_root_id())
+            else:
+                raise AggregateRootOutOfSyncError(
+                    "Aggregate root in store is newer then current aggregate")
+        except AggregateRootIdNotFoundError:
+            """ no risk of conflicts here """
+            self._store.save(uncommitted_events,
+                             aggregate_root.get_aggregate_root_id())
+        finally:
+            aggregate_root.clear_uncommitted_events()
+
+    def is_outdated(self, version_from_store: int, current_version: int) -> bool:
+        """ if the first uncommitted event -1 is not equal to the version in the
+         store then the aggregate is out of sync """
+        return (current_version - 1) != version_from_store

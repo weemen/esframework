@@ -6,6 +6,12 @@ class AggregateRootIdNotFoundError(Exception):
     pass
 
 
+class AggregateRootOutOfSyncError(Exception):
+    """ Exception Class when the aggregate in the store is newer then the
+    loaded aggregate """
+    pass
+
+
 class WrongExceptionRaised(Exception):
     """ An exception was expected but not the given one """
     pass

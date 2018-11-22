@@ -119,3 +119,26 @@ class TestAggregateRoot(unittest.TestCase):
         self.assertEqual(
             aggregate.__dict__.get('_MyTestAggregate__an_event_property'),
             'my_prop2')
+
+    def test_it_has_a_loaded_version(self):
+        """ test if events are versioned when aggregate is loaded """
+        aggregate_root_id = '897878D0-1230-408B-A980-7A9C24EBDEFA'
+        events = [
+            EventA(aggregate_root_id, 'my_prop'),
+            EventA(aggregate_root_id, 'my_prop1'),
+            EventA(aggregate_root_id, 'my_prop2'),
+        ]
+        aggregate = MyTestAggregate()
+        aggregate.initialize_state(events)
+        self.assertEqual(aggregate.get_version(), 3)
+
+    def test_it_can_version_uncommitted_events(self):
+        """ test if newly added events are versioned """
+        uuid = 'AB9850E7-B590-4A65-B513-91ABD6DC6F40'
+        an_event_prop = 'event_a_property'
+
+        aggregate = MyTestAggregate.event_a(uuid, an_event_prop)
+        self.assertEqual(aggregate.get_version(), 0)
+
+        uncommitted_events = aggregate.get_uncommitted_events()
+        self.assertEqual(uncommitted_events[0].get_version(), 1)

@@ -5,36 +5,7 @@ from typing import List
 from esframework.domain import DomainEvent
 from esframework.exceptions import AggregateRootIdNotFoundError
 from esframework.store import (InMemoryStore, SQLStore)
-
-
-class EventA(DomainEvent):
-    """ Dummy EventA class for testing """
-
-    def __init__(self, aggregate_root_id, an_event_property):
-        self.__aggregate_root_id = aggregate_root_id
-        self.__an_event_property = an_event_property
-
-    def get_aggregate_root_id(self):
-        """ returns the property aggregate_root_id of this event """
-        return self.__aggregate_root_id
-
-    def get_an_event_property(self):
-        """ Gets an_event_property of this event """
-        return self.__an_event_property
-
-    def serialize(self):
-        """ Serialize the event for storing """
-        return {
-            'aggregate_root_id': self.__aggregate_root_id,
-            'an_event_property': self.__an_event_property,
-        }
-
-    @staticmethod
-    def deserialize(event_data):
-        """ deserialize the event for building the aggregate root """
-        return EventA(
-            event_data['aggregate_root_id'],
-            event_data['an_event_property'])
+from esframework.tests.assets import EventA
 
 
 class TestInMemoryStore(unittest.TestCase):

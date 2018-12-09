@@ -1,68 +1,10 @@
 """ init.py """
 import unittest
 from pytest import raises
-from esframework.domain import (AggregateRoot, DomainEvent)
 from esframework.exceptions import (WrongExceptionRaised,
                                     InvalidMessageException)
 from esframework.tooling.aggregate import AggregateRootTestCase
-
-
-class EventA(DomainEvent):
-    """ Dummy EventA class for testing """
-
-    def __init__(self, aggregate_root_id, an_event_property):
-        self.__aggregate_root_id = aggregate_root_id
-        self.__an_event_property = an_event_property
-
-    def get_aggregate_root_id(self):
-        """ returns the property aggregate_root_id of this event """
-        return self.__aggregate_root_id
-
-    def get_an_event_property(self):
-        """ Gets an_event_property of this event """
-        return self.__an_event_property
-
-    def serialize(self):
-        """ Serialize the event for storing """
-        return {
-            'aggregate_root_id': self.__aggregate_root_id,
-            'an_event_property': self.__an_event_property,
-        }
-
-    @staticmethod
-    def deserialize(event_data):
-        """ deserialize the event for building the aggregate root """
-        return EventA(
-            event_data['aggregate_root_id'],
-            event_data['an_event_property'])
-
-
-class MyTestAggregate(AggregateRoot):
-    """ A test aggregate for unittesting """
-
-    __aggregate_root_id = None
-    __an_event_property = ''
-
-    @staticmethod
-    def event_a(aggregate_root_id, an_event_property):
-        """ Creates MyTestAggregate and will try to apply EventA """
-        my_test_aggr = MyTestAggregate()
-        my_test_aggr.apply(EventA(aggregate_root_id, an_event_property))
-
-        return my_test_aggr
-
-    def apply_event_a(self, event):
-        """ Apply EventA on the aggregate root """
-        self.__aggregate_root_id = event.get_aggregate_root_id()
-        self.__an_event_property = event.get_an_event_property()
-
-    def event_b(self, param_one, param_two):
-        """ deliberately raise an RuntimeError here"""
-        raise RuntimeError('done on purpose')
-
-    def get_aggregate_root_id(self):
-        """ Get the aggregate root id of this aggregate """
-        return self.__aggregate_root_id
+from esframework.tests.assets import EventA, MyTestAggregate
 
 
 class AggregateRootTestCaseTest(unittest.TestCase):
@@ -154,7 +96,7 @@ class AggregateRootTestCaseTest(unittest.TestCase):
         testcase = AggregateRootTestCase()
         testcase.withAggregate(aggregate_root)\
             .expects_exception(
-            RuntimeError, 'done on purpose', 'event_b', 'myVal1', 'myVal2')
+            RuntimeError, 'done on purpose', 'event_c', 'myVal1', 'myVal2')
 
     def test_it_can_throw_WrongExceptionRaised(self):
         """ WrongException is raised when expected exception does not match
@@ -167,7 +109,7 @@ class AggregateRootTestCaseTest(unittest.TestCase):
 
         with raises(WrongExceptionRaised):
             testcase.withAggregate(aggregate_root).expects_exception(
-                AttributeError, 'done on purpose', 'event_b', 'myVal1',
+                AttributeError, 'done on purpose', 'event_c', 'myVal1',
                 'myVal2')
 
     def test_it_can_throw_InvalidMessageException(self):
@@ -181,7 +123,7 @@ class AggregateRootTestCaseTest(unittest.TestCase):
 
         with raises(InvalidMessageException):
             testcase.withAggregate(aggregate_root).expects_exception(
-                RuntimeError, 'wrong message', 'event_b', 'myVal1', 'myVal2')
+                RuntimeError, 'wrong message', 'event_c', 'myVal1', 'myVal2')
 
     def test_it_cant_assert_exception_if_aggregate_root_is_not_set(self):
         """ validate that aggregate root is there when asserting for
@@ -189,5 +131,5 @@ class AggregateRootTestCaseTest(unittest.TestCase):
         testcase = AggregateRootTestCase()
         with raises(RuntimeError) as excinfo :
             testcase.expects_exception(
-                RuntimeError, 'done on purpose', 'event_b')
+                RuntimeError, 'done on purpose', 'event_c')
         assert 'Aggregate root is not set!' in str(excinfo.value)

@@ -190,7 +190,8 @@ class TestSqlStore(unittest.TestCase):
 
         store.save(eventstream, aggr_root)
 
-        stored_eventstream: List[DomainEvent] = store.load(aggr_root)
+        # stored_eventstream: List[DomainEvent]
+        stored_eventstream = store.load(aggr_root)
 
         event4 = EventA(aggr_root, 'my_prop')
         event4.set_version(4)

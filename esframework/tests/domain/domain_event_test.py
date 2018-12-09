@@ -51,7 +51,8 @@ class TestDomainEvent(unittest.TestCase):
             'an_event_property': 'foo',
         }
 
-        domain_event: EventA = EventA.deserialize(serialized_data)
+        # domain_event: EventA
+        domain_event = EventA.deserialize(serialized_data)
         self.assertEqual(
             domain_event.get_aggregate_root_id(),
             '0A919B3E-5BCB-41DC-B157-8A9E2A7198BE'

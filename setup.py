@@ -69,7 +69,6 @@ setup(
             'esframework.sql.add_store=esframework.cli.sql:create_event_store'
         ],
     },
-    data_files=[('config', './config')],
     project_urls={  # Optional
         'Source': 'https://github.com/pypa/sampleproject/',
     },

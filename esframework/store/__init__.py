@@ -105,7 +105,7 @@ class SQLStore(Store):
             causation_id = domain_event_id
 
     def convert_to_domain_events(self, records: List[SqlDomainRecord]) -> List[DomainEvent]:
-        domain_events: List[DomainEvent] = []
+        domain_events = []  # domain_events: List[DomainEvent]
 
         for record in records:
             event_class = import_path(record.domain_event_name)

@@ -1,21 +1,62 @@
 """ Imports """
 import abc
+import datetime
 import re
+
 from typing import List
+
+from esframework.exceptions import DomainEventException
 
 
 class Event(object, metaclass=abc.ABCMeta):
 
+    __causation_id = None
+    __correlation_id = None
+    __event_date = datetime.datetime.now().isoformat()
+    __event_id = None
     __version = None
 
     def __init__(self):
+        self.__causation_id = None
+        self.__event_date = datetime.datetime.now().isoformat()
         self.__version = None
+        self.__correlation_id = None
+        self.__event_id = None
+
+    def get_version(self) -> int:
+        return self.__version
 
     def set_version(self, version_number: int):
+        if self.__version is not None:
+            raise DomainEventException("Version can only be set once!")
         self.__version = version_number
 
-    def get_version(self):
-        return self.__version
+    def get_causation_id(self) -> str:
+        return self.__causation_id
+
+    def set_causation_id(self, causation_id: str):
+        if self.__causation_id is not None:
+            raise DomainEventException("Causation id can only be set once!")
+        self.__causation_id = causation_id
+
+    def get_correlation_id(self) -> str:
+        return self.__correlation_id
+
+    def set_correlation_id(self, correlation_id: str):
+        if self.__correlation_id is not None:
+            raise DomainEventException("Correlation id can only be set once!")
+        self.__correlation_id = correlation_id
+
+    def get_event_id(self) -> str:
+        return self.__event_id
+
+    def set_event_id(self, event_id: str):
+        if self.__event_id is not None:
+            raise DomainEventException("Event id can only be set once!")
+        self.__event_id = event_id
+
+    def get_event_date(self) -> str:
+        return self.__event_date
 
 
 class DomainEvent(Event):

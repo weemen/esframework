@@ -6,6 +6,7 @@ from esframework.exceptions import AggregateRootOutOfSyncError
 from esframework.repository import DefaultRepository
 from esframework.store import InMemoryStore
 
+
 class EventA(DomainEvent):
     """ Dummy EventA class for testing """
 

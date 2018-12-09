@@ -24,3 +24,7 @@ def import_path(dotted_path):
         msg = 'Module "%s" does not define a "%s" attribute/class' % (
             module_path, class_name)
         six.reraise(ImportError, ImportError(msg), sys.exc_info()[2])
+
+
+def get_fully_qualified_path_name(cur_obj: object) -> str:
+    return cur_obj.__module__ + "." + cur_obj.__class__.__qualname__

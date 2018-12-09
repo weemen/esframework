@@ -1,8 +1,11 @@
 """ Imports """
 import unittest
 from pytest import raises
-from typing import List
-from esframework.domain import DomainEvent
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from esframework.config import ESConfig
+from esframework.data_sources.sqlalchemy.models import SqlDomainRecord
 from esframework.exceptions import AggregateRootIdNotFoundError
 from esframework.store import (InMemoryStore, SQLStore)
 from esframework.tests.assets import EventA
@@ -80,11 +83,18 @@ class TestInMemoryStore(unittest.TestCase):
 
 class TestSqlStore(unittest.TestCase):
     """ testing the SqlStore """
+    def setUp(self):
+        es_config = ESConfig()
+        es_config.load('./config/esframework.ini')
+        engine = create_engine('sqlite:///:memory:', echo=True)
+        self.__session = sessionmaker(bind=engine)()
+        model = SqlDomainRecord()
+        model.metadata.create_all(engine)
 
     def test_it_can_store_and_load_an_event(self):
         """ test if InMemoryStore can actually store an event """
 
-        store = SQLStore()
+        store = SQLStore(self.__session)
 
         aggregate_root_id = '897878D0-1230-408B-A980-7A9C24EBDEFA'
         event_a = EventA(aggregate_root_id, 'my_prop')
@@ -98,7 +108,7 @@ class TestSqlStore(unittest.TestCase):
 
     def test_it_can_store_and_load_multiple_events(self):
         """ test if SQLStore can store and load multiple events """
-        store = SQLStore()
+        store = SQLStore(self.__session)
 
         aggregate_root_id = '52B6A306-540C-4796-92E4-A10520EA3ED7'
         event1 = EventA(aggregate_root_id, 'my_prop')
@@ -119,7 +129,7 @@ class TestSqlStore(unittest.TestCase):
 
     def test_it_can_store_and_load_multiple_events_multiple_aggregates(self):
         """ test if SQLStore can deal with multiple aggregates """
-        store = SQLStore()
+        store = SQLStore(self.__session)
 
         aggr_root_id_1 = '897878D0-1230-408B-A980-7A9C24EBDEFA'
         event1 = EventA(aggr_root_id_1, 'my_prop')
@@ -155,7 +165,7 @@ class TestSqlStore(unittest.TestCase):
 
     def test_it_throws_when_id_doesnt_exists(self):
         """ test if SQLStore throws AggregateRootIdNotFoundError """
-        store = SQLStore()
+        store = SQLStore(self.__session)
 
         aggregate_root_id = '897878D0-1230-408B-A980-7A9C24EBDEFA'
         event1 = EventA(aggregate_root_id, 'my_prop')
@@ -172,7 +182,7 @@ class TestSqlStore(unittest.TestCase):
 
     def test_it_can_set_correct_causation_ids(self):
         """ test if SQLStore can deal properly with causation ids """
-        store = SQLStore()
+        store = SQLStore(self.__session)
 
         aggr_root = '897878D0-1230-408B-A980-7A9C24EBDEFA'
         event1 = EventA(aggr_root, 'my_prop')

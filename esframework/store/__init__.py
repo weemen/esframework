@@ -2,9 +2,6 @@
 import abc
 import datetime
 import uuid
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from typing import List
 
 from esframework import (get_fully_qualified_path_name, import_path)
@@ -57,11 +54,8 @@ class InMemoryStore(Store):
 class SQLStore(Store):
     """ A store for storing in SQL databases """
 
-    def __init__(self):
-        engine = create_engine('sqlite:///:memory:', echo=True)
-        self.__session = sessionmaker(bind=engine)()
-        model = SqlDomainRecord()
-        model.metadata.create_all(engine)
+    def __init__(self, session):
+        self.__session = session
 
     def load(self, aggregate_root_id: str) -> List[DomainEvent]:
 

@@ -12,6 +12,11 @@ class AggregateRootOutOfSyncError(Exception):
     pass
 
 
+class DomainEventException(Exception):
+    """ Exception for illegal actions within Domain events"""
+    pass
+
+
 class WrongExceptionRaised(Exception):
     """ An exception was expected but not the given one """
     pass

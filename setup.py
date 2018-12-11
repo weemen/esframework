@@ -16,7 +16,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
 
-install_requires = ['six']
+install_requires = ['six', 'SQLAlchemy == 1.3.0b1']
 testing_requires = ['pytest', 'pylint', 'flake8', 'pyre-check']
 
 setup(
@@ -65,7 +65,9 @@ setup(
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional
-        'console_scripts': [],
+        'console_scripts': [
+            'esframework.sql.add_store=esframework.cli.sql:create_event_store'
+        ],
     },
     project_urls={  # Optional
         'Source': 'https://github.com/pypa/sampleproject/',

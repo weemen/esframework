@@ -86,7 +86,7 @@ class TestSqlStore(unittest.TestCase):
     def setUp(self):
         es_config = ESConfig()
         es_config.load('./config/esframework.ini')
-        engine = create_engine('sqlite:///:memory:', echo=True)
+        engine = create_engine(es_config.get('esframework.storage', 'host'), echo=True)
         self.__session = sessionmaker(bind=engine)()
         model = SqlDomainRecord()
         model.metadata.create_all(engine)

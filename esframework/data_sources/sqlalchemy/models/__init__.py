@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, JSON
+from sqlalchemy import Column, Integer, String, JSON, UniqueConstraint
 
 Base = declarative_base()
 
@@ -17,6 +17,8 @@ class SqlDomainRecord(Base):
     correlation_id = Column(String, nullable=False)
     causation_id = Column(String, nullable=False)
     event_metadata = Column(JSON, nullable=False)
+
+    UniqueConstraint('aggregate_root_id', 'version', name='uix_1')
 
     def __repr__(self):
         return "<EventStoreRecord(" \

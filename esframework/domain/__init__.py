@@ -14,14 +14,16 @@ class Event(object, metaclass=abc.ABCMeta):
     __correlation_id = None
     __event_date = datetime.datetime.now().isoformat()
     __event_id = None
+    __metadata = list()
     __version = None
 
     def __init__(self):
         self.__causation_id = None
-        self.__event_date = datetime.datetime.now().isoformat()
-        self.__version = None
         self.__correlation_id = None
+        self.__event_date = datetime.datetime.now().isoformat()
         self.__event_id = None
+        self.__metadata = list()
+        self.__version = None
 
     def get_version(self) -> int:
         return self.__version
@@ -58,6 +60,38 @@ class Event(object, metaclass=abc.ABCMeta):
     def get_event_date(self) -> str:
         return self.__event_date
 
+    def get_metadata(self, include_classname=False):
+        if include_classname:
+            return self.__metadata
+
+        clean_list = []
+        for metadata in self.__metadata:
+            for key in metadata:
+                metadata[key] = metadata[key].replace(
+                    "_{}".format(self.__class__.__name__),
+                    "")
+            clean_list.append(metadata)
+        return clean_list
+
+    def add_metadata(self, key: str, event_property: str):
+        event_property = "_{}{}".format(
+            self.__class__.__name__, event_property)
+
+        if event_property not in self.__dict__:
+            raise DomainEventException(
+                "Can't set metadata on non existing event properties")
+
+        value = {key: event_property}
+        if value in self.__metadata:
+            raise DomainEventException("Metadata is already set!")
+        self.__metadata.append(value)
+
+    def remove_metadata(self, key, event_property):
+        value = {key: event_property}
+        if value not in self.__metadata:
+            raise DomainEventException("Can't remove non existent metadata!")
+        self.__metadata.remove(value)
+
 
 class DomainEvent(Event):
     """ Abstract event class with serialize and deserialize method """
@@ -80,7 +114,7 @@ class AggregateRoot(object):
     __uncommitted_events = []
 
     def __init__(self):
-        __loaded_version = 0
+        self.__loaded_version = 0
         self.__uncommitted_events = []
 
     def apply(self, event: DomainEvent):

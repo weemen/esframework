@@ -1,4 +1,4 @@
-""" Prepared test asssts """
+""" Prepared test assets """
 
 from esframework.domain import DomainEvent, AggregateRoot
 
@@ -7,6 +7,7 @@ class EventA(DomainEvent):
     """ Dummy EventA class for testing """
 
     def __init__(self, aggregate_root_id, an_event_property):
+        super().__init__()
         self.__aggregate_root_id = aggregate_root_id
         self.__an_event_property = an_event_property
 
@@ -37,6 +38,7 @@ class EventB(DomainEvent):
     """ Dummy EventB class for testing """
 
     def __init__(self, aggregate_root_id, an_event_property):
+        super().__init__()
         self.__aggregate_root_id = aggregate_root_id
         self.__my_prop = an_event_property
 

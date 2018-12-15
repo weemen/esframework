@@ -62,3 +62,35 @@ class TestDomainEvent(unittest.TestCase):
             domain_event.get_an_event_property(),
             'foo'
         )
+
+    def test_it_can_add_metadata(self):
+        domain_event = EventA("0A919B3E-5BCB-41DC-B157-8A9E2A7198BE", "foo")
+        domain_event.add_metadata("foo", "__an_event_property")
+        self.assertEqual(domain_event.get_metadata(), [{"foo": "__an_event_property"}])
+
+    def test_it_cannot_have_duplicate_metadata(self):
+        domain_event = EventA("0A919B3E-5BCB-41DC-B157-8A9E2A7198B", "foo")
+        domain_event.add_metadata("foo", "__an_event_property")
+        with self.assertRaises(DomainEventException) as ex:
+            domain_event.add_metadata("foo", "__an_event_property")
+        self.assertEqual(str(ex.exception), 'Metadata is already set!')
+
+    def test_it_can_remove_metadata(self):
+        domain_event = EventA("0A919B3E-5BCB-41DC-B157-8A9E2A7198BE", "foo")
+        domain_event.add_metadata("foo", "__an_event_property")
+        self.assertEqual(domain_event.get_metadata(), [{"foo": "__an_event_property"}])
+        domain_event.remove_metadata("foo", "__an_event_property")
+        self.assertEqual(domain_event.get_metadata(), [])
+
+    def test_it_cannot_remove_not_existent_data(self):
+        domain_event = EventA("0A919B3E-5BCB-41DC-B157-8A9E2A7198B", "foo")
+        with self.assertRaises(DomainEventException) as ex:
+            domain_event.remove_metadata("foo", "__an_event_property")
+        self.assertEqual(str(ex.exception), "Can't remove non existent metadata!")
+
+    def test_it_cant_set_metadata_on_non_existing_properties(self):
+        domain_event = EventA("0A919B3E-5BCB-41DC-B157-8A9E2A7198B", "foo")
+        with self.assertRaises(DomainEventException) as ex:
+            domain_event.add_metadata("foo", "non_existing_prop")
+        self.assertEqual(
+            str(ex.exception), "Can't set metadata on non existing event properties")

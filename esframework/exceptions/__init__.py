@@ -25,3 +25,8 @@ class WrongExceptionRaised(Exception):
 class InvalidMessageException(Exception):
     """ An exception was expected but not the given one """
     pass
+
+
+class EncryptionCodecError(Exception):
+    """ An exception class when encryption and decryption errors """
+    pass

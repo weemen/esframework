@@ -117,7 +117,8 @@ Commands are plain stright forwards objects that will given to the events.
         if not tries or not isinstance(tries, int):
             raise CommandException(
                 "Cannot construct command: tries is missing!")
-
+        
+        super().__init__()
         self.__aggregate_root_id = aggregate_root_id
         self.__word = word
         self.__tries = tries
@@ -134,6 +135,8 @@ Commands are plain stright forwards objects that will given to the events.
    
    As you can see in the example above I'll keep immutability and I do 
    validation. I created a new folder for exceptions (called: "exceptions").
+   Note: ```super().__init__()``` is needed to set all the instances variable
+   to the right default value. I'm working on a fix for this!
    
  - As in a proper eventstorming session it's now time to implement all the
  requirements that are needed to turn commands into events. It's time to

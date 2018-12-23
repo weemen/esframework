@@ -2,6 +2,7 @@
 import abc
 import datetime
 import re
+from typing import Union
 
 from typing import List
 
@@ -14,14 +15,16 @@ class Event(object, metaclass=abc.ABCMeta):
     __correlation_id = None
     __event_date = datetime.datetime.now().isoformat()
     __event_id = None
+    __metadata = list()
     __version = None
 
     def __init__(self):
         self.__causation_id = None
-        self.__event_date = datetime.datetime.now().isoformat()
-        self.__version = None
         self.__correlation_id = None
+        self.__event_date = datetime.datetime.now().isoformat()
         self.__event_id = None
+        self.__metadata = list()
+        self.__version = None
 
     def get_version(self) -> int:
         return self.__version
@@ -58,6 +61,30 @@ class Event(object, metaclass=abc.ABCMeta):
     def get_event_date(self) -> str:
         return self.__event_date
 
+    def get_metadata(self):
+        return self.__metadata
+
+    def add_metadata(self, key: str, value: Union[bool, dict, int, list, str]):
+
+        if not isinstance(value, bool) \
+                and not isinstance(value, dict) \
+                and not isinstance(value, int) \
+                and not isinstance(value, list) \
+                and not isinstance(value, str):
+            raise DomainEventException(
+                "Can only set metadata with simple data types (bool, dict, int, list, string)")
+
+        value = {key: value}
+        if value in self.__metadata:
+            raise DomainEventException("Metadata is already set!")
+        self.__metadata.append(value)
+
+    def remove_metadata(self, key, event_property):
+        value = {key: event_property}
+        if value not in self.__metadata:
+            raise DomainEventException("Can't remove non existent metadata!")
+        self.__metadata.remove(value)
+
 
 class DomainEvent(Event):
     """ Abstract event class with serialize and deserialize method """
@@ -80,7 +107,7 @@ class AggregateRoot(object):
     __uncommitted_events = []
 
     def __init__(self):
-        __loaded_version = 0
+        self.__loaded_version = 0
         self.__uncommitted_events = []
 
     def apply(self, event: DomainEvent):

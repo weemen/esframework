@@ -16,7 +16,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
 
-install_requires = ['six', 'SQLAlchemy == 1.3.0b1']
+install_requires = ['six', 'pycryptodome', 'SQLAlchemy == 1.3.0b1']
 testing_requires = ['pytest', 'pylint', 'flake8', 'pyre-check']
 
 setup(

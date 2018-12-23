@@ -23,6 +23,12 @@ class Store(object):
         """ Should be implemented by child class for saving to storage """
         raise NotImplementedError('Every repository must have an save method.')
 
+    def encrypt(self):
+        pass
+
+    def decrypt(self):
+        pass
+
 
 class InMemoryStore(Store):
     """ An in memory event store """

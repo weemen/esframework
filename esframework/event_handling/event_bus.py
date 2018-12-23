@@ -32,7 +32,7 @@ class BasicBus(EventBus):
     def __init__(self):
         self.__listeners = []
 
-    def get_event_listeners(self):
+    def get_event_listeners(self) -> List[EventListener]:
         return self.__listeners
 
     def subscribe(self, event_listener: EventListener):

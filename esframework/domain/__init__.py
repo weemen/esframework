@@ -2,6 +2,7 @@
 import abc
 import datetime
 import re
+from typing import Union
 
 from typing import List
 
@@ -60,28 +61,20 @@ class Event(object, metaclass=abc.ABCMeta):
     def get_event_date(self) -> str:
         return self.__event_date
 
-    def get_metadata(self, include_classname=False):
-        if include_classname:
-            return self.__metadata
+    def get_metadata(self):
+        return self.__metadata
 
-        clean_list = []
-        for metadata in self.__metadata:
-            for key in metadata:
-                metadata[key] = metadata[key].replace(
-                    "_{}".format(self.__class__.__name__),
-                    "")
-            clean_list.append(metadata)
-        return clean_list
+    def add_metadata(self, key: str, value: Union[bool, dict, int, list, str]):
 
-    def add_metadata(self, key: str, event_property: str):
-        event_property = "_{}{}".format(
-            self.__class__.__name__, event_property)
-
-        if event_property not in self.__dict__:
+        if not isinstance(value, bool) \
+                and not isinstance(value, dict) \
+                and not isinstance(value, int) \
+                and not isinstance(value, list) \
+                and not isinstance(value, str):
             raise DomainEventException(
-                "Can't set metadata on non existing event properties")
+                "Can only set metadata with simple data types (bool, dict, int, list, string)")
 
-        value = {key: event_property}
+        value = {key: value}
         if value in self.__metadata:
             raise DomainEventException("Metadata is already set!")
         self.__metadata.append(value)

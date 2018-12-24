@@ -30,3 +30,12 @@ class InvalidMessageException(Exception):
 class EncryptionCodecError(Exception):
     """ An exception class when encryption and decryption errors """
     pass
+
+
+class EventBusException(Exception):
+    """ An exception class when errors occur in eventbusses """
+    pass
+
+
+class EventListenerException(Exception):
+    """ An exception class when errors occur in event listeners """

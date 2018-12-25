@@ -58,4 +58,3 @@ class BasicBus(EventBus):
                 raise EventBusException("domain event must be of type DomainEvent")
             for listener in self.__listeners:
                 listener.receive(domain_event)
-

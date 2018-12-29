@@ -73,6 +73,7 @@ class DefaultRepository(Repository):
             """ no risk of conflicts here """
             self._store.save(uncommitted_events,
                              aggregate_root.get_aggregate_root_id())
+            self._eventbus.emit(uncommitted_events)
         finally:
             aggregate_root.clear_uncommitted_events()
 

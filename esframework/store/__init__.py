@@ -65,8 +65,10 @@ class SQLStore(Store):
 
     def load(self, aggregate_root_id: str) -> List[DomainEvent]:
 
-        records = self.__session.query(SqlDomainRecord)\
-            .filter_by(aggregate_root_id=aggregate_root_id).all()
+        records = self.__session.query(SqlDomainRecord) \
+            .filter_by(aggregate_root_id=aggregate_root_id) \
+            .order_by(SqlDomainRecord.version) \
+            .all()
 
         if not records:
             """ Read event stream from relational database """

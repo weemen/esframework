@@ -1,7 +1,9 @@
 """ imports """
 import unittest
 from pytest import raises
-from esframework.exceptions import AggregateRootOutOfSyncError
+
+from esframework.event_handling.event_bus import BasicBus
+from esframework.exceptions import AggregateRootOutOfSyncError, RepositoryException
 from esframework.repository import DefaultRepository
 from esframework.store import InMemoryStore
 from esframework.tests.assets import EventA, MyTestAggregate
@@ -22,6 +24,7 @@ class DefaultRepositoryTest(unittest.TestCase):
         repository = DefaultRepository(
             'esframework.tests.repository.repository_test.MyTestAggregate',
             store,
+            BasicBus()
         )
 
         aggregate = repository.load(aggregate_root_id=aggregate_id)
@@ -38,6 +41,7 @@ class DefaultRepositoryTest(unittest.TestCase):
         repository = DefaultRepository(
             'esframework.tests.repository.repository_test.MyTestAggregate',
             InMemoryStore(),
+            BasicBus()
         )
 
         repository.save(aggregate_root=aggregate)
@@ -57,6 +61,7 @@ class DefaultRepositoryTest(unittest.TestCase):
         repository = DefaultRepository(
             'esframework.tests.repository.repository_test.MyTestAggregate',
             store,
+            BasicBus()
         )
 
         aggregate_one = repository.load(aggregate_root_id=aggregate_id)
@@ -65,9 +70,25 @@ class DefaultRepositoryTest(unittest.TestCase):
         aggregate_one.event_b(aggregate_id, 'my_prop_value')
         repository.save(aggregate_one)
 
-        with raises(
-                AggregateRootOutOfSyncError,
-                message='Aggregate root in store is newer then current aggregate'):
+        with self.assertRaises(AggregateRootOutOfSyncError) as ex:
             aggregate_two.event_b(aggregate_id, 'my_prop_value')
             repository.save(aggregate_two)
+        self.assertEqual(str(ex.exception), "Aggregate root in store is newer then current aggregate")
 
+    def test_it_cannot_accept_an_invalid_created_store(self):
+        with self.assertRaises(RepositoryException) as ex:
+            DefaultRepository(
+                'esframework.tests.repository.repository_test.MyTestAggregate',
+                object(),
+                BasicBus()
+            )
+        self.assertEqual(str(ex.exception), "Store parameter is not type Store!")
+
+    def test_it_cannot_accept_an_invalid_created_eventbus(self):
+        with self.assertRaises(RepositoryException) as ex:
+            DefaultRepository(
+                'esframework.tests.repository.repository_test.MyTestAggregate',
+                InMemoryStore(),
+                object()
+            )
+        self.assertEqual(str(ex.exception), "Eventbus parameter is not of type EventBus!")

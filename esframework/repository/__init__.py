@@ -3,7 +3,8 @@ import abc
 
 from esframework import import_path
 from esframework.domain import AggregateRoot
-from esframework.exceptions import AggregateRootIdNotFoundError, AggregateRootOutOfSyncError
+from esframework.event_handling.event_bus import EventBus
+from esframework.exceptions import AggregateRootIdNotFoundError, AggregateRootOutOfSyncError, RepositoryException
 from esframework.store import Store
 
 
@@ -14,10 +15,18 @@ class Repository(object, metaclass=abc.ABCMeta):
 
     _aggregate_root_class = None
     _store = None
+    _eventbus = None
 
-    def __init__(self, aggregate_root_class: str, store: Store):
+    def __init__(self, aggregate_root_class: str, store: Store, eventbus: EventBus):
+        if not isinstance(store, Store):
+            raise RepositoryException("Store parameter is not type Store!")
+
+        if not isinstance(eventbus, EventBus):
+            raise RepositoryException("Eventbus parameter is not of type EventBus!")
+
         self._aggregate_root_class = aggregate_root_class
         self._store = store
+        self._eventbus = eventbus
 
     @abc.abstractmethod
     def load(self, aggregate_root_id: str):
@@ -56,6 +65,7 @@ class DefaultRepository(Repository):
                     uncommitted_events[0].get_version()):
                 self._store.save(uncommitted_events,
                                  aggregate_root.get_aggregate_root_id())
+                self._eventbus.emit(uncommitted_events)
             else:
                 raise AggregateRootOutOfSyncError(
                     "Aggregate root in store is newer then current aggregate")

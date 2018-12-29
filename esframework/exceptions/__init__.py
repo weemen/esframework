@@ -17,6 +17,11 @@ class DomainEventException(Exception):
     pass
 
 
+class RepositoryException(Exception):
+    """ Exception for repository related actions """
+    pass
+
+
 class WrongExceptionRaised(Exception):
     """ An exception was expected but not the given one """
     pass

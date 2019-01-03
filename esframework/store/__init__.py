@@ -67,7 +67,7 @@ class SQLStore(Store):
 
         records = self.__session.query(SqlDomainRecord) \
             .filter_by(aggregate_root_id=aggregate_root_id) \
-            .order_by(SqlDomainRecord.version) \
+            .order_by(SqlDomainRecord.aggregate_root_version) \
             .all()
 
         if not records:
@@ -92,7 +92,7 @@ class SQLStore(Store):
             event = SqlDomainRecord(
                 domain_event_id=domain_event_id,
                 aggregate_root_id=aggregate_root_id,
-                version=domain_event.get_version(),
+                aggregate_root_version=domain_event.get_aggregate_root_version(),
                 domain_event_name=get_fully_qualified_path_name(domain_event),
                 domain_event_body=domain_event.serialize(),
                 store_date=datetime.datetime.now().isoformat(),
@@ -114,7 +114,7 @@ class SQLStore(Store):
             event = event_class.deserialize(record.domain_event_body)
             event.set_event_id(record.domain_event_id)
             event.set_causation_id(record.causation_id)
-            event.set_version(record.version)
+            event.set_aggregate_root_version(record.aggregate_root_version)
             event.set_correlation_id(record.correlation_id)
             domain_events.append(event)
 

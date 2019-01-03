@@ -26,10 +26,10 @@ class Event(object, metaclass=abc.ABCMeta):
         self.__metadata = list()
         self.__version = None
 
-    def get_version(self) -> int:
+    def get_aggregate_root_version(self) -> int:
         return self.__version
 
-    def set_version(self, version_number: int):
+    def set_aggregate_root_version(self, version_number: int):
         if self.__version is not None:
             raise DomainEventException("Version can only be set once!")
         self.__version = version_number
@@ -103,17 +103,17 @@ class DomainEvent(Event):
 
 class AggregateRoot(object):
     """ A base aggregate root class with basics already implemented """
-    __loaded_version = 0
+    __loaded_aggregate_root_version = 0
     __uncommitted_events = []
 
     def __init__(self):
-        self.__loaded_version = 0
+        self.__loaded_aggregate_root_version = 0
         self.__uncommitted_events = []
 
     def apply(self, event: DomainEvent):
         """ Apply an event and put it to the uncommitted events list """
-        event_version = self.__loaded_version + len(self.__uncommitted_events) + 1
-        event.set_version(event_version)
+        event_version = self.__loaded_aggregate_root_version + len(self.__uncommitted_events) + 1
+        event.set_aggregate_root_version(event_version)
 
         self.__uncommitted_events.append(event)
         self.apply_event(event)
@@ -140,11 +140,11 @@ class AggregateRoot(object):
         """
         for event in list_of_events:
             self.apply_event(event)
-            self.__loaded_version += 1
+            self.__loaded_aggregate_root_version += 1
 
-    def get_version(self) -> int:
+    def get_aggregate_root_version(self) -> int:
         """ returns the initialized state version """
-        return self.__loaded_version
+        return self.__loaded_aggregate_root_version
 
     @abc.abstractmethod
     def get_aggregate_root_id(self):

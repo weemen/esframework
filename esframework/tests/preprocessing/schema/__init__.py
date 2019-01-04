@@ -1,0 +1,2 @@
+""" autoload for schema tests """
+

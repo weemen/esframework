@@ -1,4 +1,8 @@
 import abc
+import inspect
+
+from esframework.domain import DomainEvent
+from esframework.exceptions import SchemaMapperException
 
 
 class SchemaMapper(object, metaclass=abc.ABCMeta):
@@ -50,3 +54,38 @@ class WeakSchemaMapper(SchemaMapper):
 
     def get_private_property_name(self, property_name: str) -> str:
         return property_name[property_name.find('__')+2:]
+
+
+class SchemaMapperFactory(object):
+
+    @staticmethod
+    def factory(version_type: str) -> WeakSchemaMapper:
+        if version_type == 'weak-schema': return WeakSchemaMapper()
+        raise SchemaMapperException('Versioning type does not exist')
+
+
+def event_versioning(versioning_type: str):
+    """ this function is here to allow schema mapping with a simple decorator """
+    """ this should make the actual implementation for developers a lot easier """
+    def event_mapping(deserialize):
+        def wrapper(*args):
+            # unfortunately we have to do some magic here to get the class name
+            if inspect.isfunction(deserialize):
+                cls = getattr(
+                    inspect.getmodule(deserialize),
+                    deserialize.__qualname__.split('.<locals>', 1)[0].rsplit('.', 1)[0]
+                )
+                if not issubclass(cls, DomainEvent):
+                    raise SchemaMapperException("{} is not a subclass of DomainEvent".format(cls.__name__))
+            else:
+                raise SchemaMapperException("Event mapping is not possible, input is not a static method")
+
+            if versioning_type is None:
+                return deserialize(*args)
+            else:
+                mapper = SchemaMapperFactory.factory(versioning_type)
+                return deserialize(mapper.map(existing_data=args[0], current_event_mapping=cls.__dict__))
+
+        return wrapper
+
+    return event_mapping

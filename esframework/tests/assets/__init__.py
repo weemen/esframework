@@ -1,6 +1,7 @@
 """ Prepared test assets """
 
 from esframework.domain import DomainEvent, AggregateRoot
+from esframework.preprocessing.schema import event_versioning
 
 
 class EventA(DomainEvent):
@@ -21,19 +22,20 @@ class EventA(DomainEvent):
         """ Gets an_event_property of this event """
         return self.__an_event_property
 
+    @staticmethod
+    @event_versioning('weak-schema')
+    def deserialize(event_data):
+        """ deserialize the event for building the aggregate root """
+        return EventA(
+            event_data['aggregate_root_id'],
+            event_data['an_event_property'])
+
     def serialize(self):
         """ Serialize the event for storing """
         return {
             'aggregate_root_id': self.__aggregate_root_id,
             'an_event_property': self.__an_event_property,
         }
-
-    @staticmethod
-    def deserialize(event_data):
-        """ deserialize the event for building the aggregate root """
-        return EventA(
-            event_data['aggregate_root_id'],
-            event_data['an_event_property'])
 
 
 class EventB(DomainEvent):
@@ -235,6 +237,29 @@ class EventAV5(DomainEvent):
         return EventA(
             event_data['aggregate_root_id'],
             event_data['an_event_property'])
+
+
+class EventVersioningNone(DomainEvent):
+    """ Dummy EventA class for testing """
+    __aggregate_root_id = None
+
+    def __init__(self, aggregate_root_id):
+        super().__init__()
+        self.__aggregate_root_id = aggregate_root_id
+
+    def get_aggregate_root_id(self):
+        """ returns the property aggregate_root_id of this event """
+        return self.__aggregate_root_id
+
+    @staticmethod
+    @event_versioning(None)
+    def deserialize(event_data):
+        """ deserialize the event for building the aggregate root """
+        return EventVersioningNone(event_data['aggregate_root_id'])
+
+    def serialize(self):
+        """ Serialize the event for storing """
+        return {'aggregate_root_id': self.__aggregate_root_id}
 
 
 class MyTestAggregate(AggregateRoot):

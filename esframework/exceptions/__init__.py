@@ -44,3 +44,7 @@ class EventBusException(Exception):
 
 class EventListenerException(Exception):
     """ An exception class when errors occur in event listeners """
+
+
+class SchemaMapperException(Exception):
+    """ An exception class when errors occur in a schema mapper class """

@@ -194,51 +194,6 @@ class EventAV4(DomainEvent):
             event_data['an_event_property'])
 
 
-class EventAV5(DomainEvent):
-    """ Dummy EventA version 2 class for testing """
-    __aggregate_root_id = None
-    __an_event_property = None
-    __new_property = 'My default value'
-    __new_dict_prop = {
-        'some_key_one': 'dict_value_one',
-        'some_key_two': 'dict_value_two'
-    }
-    __new_list_prop = [
-        'item-1',
-        'item-2'
-    ]
-
-    def __init__(self, aggregate_root_id, an_event_property, new_property, new_dict_prop, new_list_prop):
-        super().__init__()
-        self.__aggregate_root_id = aggregate_root_id
-        self.__an_event_property = an_event_property
-        self.__new_property = new_property
-        self.__new_dict_prop = new_dict_prop
-        self.__new_list_prop = new_list_prop
-
-    def get_aggregate_root_id(self):
-        """ returns the property aggregate_root_id of this event """
-        return self.__aggregate_root_id
-
-    def get_an_event_property(self):
-        """ Gets an_event_property of this event """
-        return self.__an_event_property
-
-    def serialize(self):
-        """ Serialize the event for storing """
-        return {
-            'aggregate_root_id': self.__aggregate_root_id,
-            'an_event_property': self.__an_event_property,
-        }
-
-    @staticmethod
-    def deserialize(event_data):
-        """ deserialize the event for building the aggregate root """
-        return EventA(
-            event_data['aggregate_root_id'],
-            event_data['an_event_property'])
-
-
 class EventVersioningNone(DomainEvent):
     """ Dummy EventA class for testing """
     __aggregate_root_id = None

@@ -15,21 +15,21 @@ class SchemaMapper(object, metaclass=abc.ABCMeta):
 class WeakSchemaMapper(SchemaMapper):
 
     def map(self, existing_data: dict, current_event_mapping: dict, cleaning = True):
-        new_data = existing_data
+        new_data = existing_data.copy()
         properties = current_event_mapping
 
         if cleaning:
             properties = self.fetch_event_properties_from_event(current_event_mapping)
 
+        for property_name, value in existing_data.items():
+            if property_name not in properties.keys():
+                del(new_data[property_name])
+                continue
+
         for property_name, value in properties.items():
             if property_name not in existing_data.keys():
                 new_data[property_name] = value
                 continue
-
-            if isinstance(value, list):
-                merged_list = list(set().union(existing_data[property_name], value))
-                merged_list.sort()
-                new_data[property_name] = merged_list
 
             if isinstance(value, dict) and property_name in existing_data:
                 new_data[property_name] = self.map(existing_data[property_name], value, cleaning=False)

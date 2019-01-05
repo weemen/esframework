@@ -27,45 +27,55 @@ class Event(object, metaclass=abc.ABCMeta):
         self.__version = None
 
     def get_aggregate_root_version(self) -> int:
+        """ returns the number of events applied on the aggregate root """
         return self.__version
 
     def set_aggregate_root_version(self, version_number: int):
+        """ sets the aagregate root version which belongs to this event  """
         if self.__version is not None:
             raise DomainEventException("Version can only be set once!")
         self.__version = version_number
 
     def get_causation_id(self) -> str:
+        """ returns the causation id that belongs to this event """
         return self.__causation_id
 
     def set_causation_id(self, causation_id: str):
+        """ sets the causation id which belongs to this event """
         if self.__causation_id is not None:
             raise DomainEventException("Causation id can only be set once!")
         self.__causation_id = causation_id
 
     def get_correlation_id(self) -> str:
+        """ returns the correlation id which belongs to this event """
         return self.__correlation_id
 
     def set_correlation_id(self, correlation_id: str):
+        """ sets the correlation id which belongs to this event """
         if self.__correlation_id is not None:
             raise DomainEventException("Correlation id can only be set once!")
         self.__correlation_id = correlation_id
 
     def get_event_id(self) -> str:
+        """ returns the unique id of this event """
         return self.__event_id
 
     def set_event_id(self, event_id: str):
+        """ sets the unique id of this event """
         if self.__event_id is not None:
             raise DomainEventException("Event id can only be set once!")
         self.__event_id = event_id
 
     def get_event_date(self) -> str:
+        """ returns the date of event creation. note this is not stored date """
         return self.__event_date
 
-    def get_metadata(self):
+    def get_metadata(self) -> list:
+        """ returns the metadata of this event """
         return self.__metadata
 
     def add_metadata(self, key: str, value: Union[bool, dict, int, list, str]):
-
+        """ add metadata to this event """
         if not isinstance(value, bool) \
                 and not isinstance(value, dict) \
                 and not isinstance(value, int) \
@@ -80,6 +90,7 @@ class Event(object, metaclass=abc.ABCMeta):
         self.__metadata.append(value)
 
     def remove_metadata(self, key, event_property):
+        """ remove metadata from this event """
         value = {key: event_property}
         if value not in self.__metadata:
             raise DomainEventException("Can't remove non existent metadata!")

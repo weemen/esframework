@@ -64,14 +64,13 @@ class SQLStore(Store):
         self.__session = session
 
     def load(self, aggregate_root_id: str) -> List[DomainEvent]:
-
+        """ load a stream of DomainEvents from the database """
         records = self.__session.query(SqlDomainRecord) \
             .filter_by(aggregate_root_id=aggregate_root_id) \
             .order_by(SqlDomainRecord.aggregate_root_version) \
             .all()
 
         if not records:
-            """ Read event stream from relational database """
             raise AggregateRootIdNotFoundError(
                 'Aggregate root id does not exist',
                 aggregate_root_id)
@@ -79,7 +78,7 @@ class SQLStore(Store):
         return self.convert_to_domain_events(records)
 
     def save(self, event_stream: List[DomainEvent], aggregate_root_id: str):
-
+        """ saves a stream of DomainEvents to the database """
         causation_id = None
         for domain_event in event_stream:
 
@@ -107,6 +106,7 @@ class SQLStore(Store):
             causation_id = domain_event_id
 
     def convert_to_domain_events(self, records: List[SqlDomainRecord]) -> List[DomainEvent]:
+        """ converts a stream SqlDomainRecords to a stream of DomainEvents """
         domain_events = []  # domain_events: List[DomainEvent]
 
         for record in records:

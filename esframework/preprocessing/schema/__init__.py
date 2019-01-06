@@ -15,7 +15,7 @@ class SchemaMapper(object, metaclass=abc.ABCMeta):
 
 class WeakSchemaMapper(SchemaMapper):
 
-    def map(self, existing_data: dict, current_event_mapping: dict, cleaning: bool = True) -> list:
+    def map(self, existing_data: dict, current_event_mapping: dict, cleaning: bool = True) -> dict:
         """ mapping serialized data to the properties of the event """
         new_data = existing_data.copy()
         properties = current_event_mapping
@@ -75,22 +75,9 @@ def event_versioning(versioning_type: str):
     """ this should make the actual implementation for developers a lot easier """
     def event_mapping(deserialize):
         def wrapper(*args):
-            """ unfortunately we have to do some magic here to get the class name """
-            if inspect.isfunction(deserialize):
-                cls = getattr(
-                    inspect.getmodule(deserialize),
-                    deserialize.__qualname__.split('.<locals>', 1)[0].rsplit('.', 1)[0]
-                )
-                if not issubclass(cls, DomainEvent):
-                    raise SchemaMapperException("{} is not a subclass of DomainEvent".format(cls.__name__))
-            else:
-                raise SchemaMapperException("Event mapping is not possible, input is not a static method")
-
-            if versioning_type is None:
-                return deserialize(*args)
-            else:
-                mapper = SchemaMapperFactory.factory(versioning_type)
-                return deserialize(mapper.map(existing_data=args[0], current_event_mapping=cls.__dict__))
+            mapper = (SchemaMapperFactory.factory(versioning_type),)
+            newargs = args+mapper
+            return deserialize(*newargs)
 
         return wrapper
 

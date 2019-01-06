@@ -1,7 +1,7 @@
 """ Prepared test assets """
 
 from esframework.domain import DomainEvent, AggregateRoot
-from esframework.preprocessing.schema import event_versioning
+from esframework.preprocessing.schema import event_versioning, SchemaMapper
 
 
 class EventA(DomainEvent):
@@ -24,11 +24,12 @@ class EventA(DomainEvent):
 
     @staticmethod
     @event_versioning('weak-schema')
-    def deserialize(event_data):
+    def deserialize(event_data, schema_mapper: SchemaMapper=None):
         """ deserialize the event for building the aggregate root """
+        mapped_data = schema_mapper.map(event_data, EventA.__dict__)
         return EventA(
-            event_data['aggregate_root_id'],
-            event_data['an_event_property'])
+            mapped_data['aggregate_root_id'],
+            mapped_data['an_event_property'])
 
     def serialize(self):
         """ Serialize the event for storing """

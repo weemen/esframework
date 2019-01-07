@@ -24,7 +24,7 @@ class EventA(DomainEvent):
 
     @staticmethod
     @event_versioning('weak-schema')
-    def deserialize(event_data, schema_mapper: SchemaMapper=None):
+    def deserialize(event_data: dict, schema_mapper: SchemaMapper=None):
         """ deserialize the event for building the aggregate root """
         mapped_data = schema_mapper.map(event_data, EventA.__dict__)
         return EventA(

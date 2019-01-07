@@ -113,15 +113,15 @@ implemented. I'm looking in on Hybrid-Schema and traversing from version to vers
 boils down to this:
 
 If the serialized body has more data then event class requires:  
-Keep the data it was needed in the past no reason to delete it.
+We remove this data when we construct the event
 (This typically would happen if you a new message and would go to an old version)
 
 If serialized body has less data then the event requires:  
-Use the default values from the event class to instantiate the object.
+Use the default values from the event class to instantiate the event.
 (This typically would happen if you have an old message with an updated event, as described in
 the previous chapter)
 
-In any case, the serialized body is always leading and will overwrite the default values of the
+In any other case, the serialized body is always leading and will overwrite the default values of the
 event class. This way we always deal with version updates but there is a golden rule for success
 
 > You're never allowed to rename an property within an Event
@@ -129,7 +129,7 @@ event class. This way we always deal with version updates but there is a golden 
 ### How to implement versioning of my events in ESframework
 To implement weak-schema versioning into your application you have to do two things:
   
-1: (the hardest part) Set default values as class properties
+1: Set default values as class properties
 ```python
 class EventA(DomainEvent):
     """ Dummy EventA class for testing """
@@ -139,7 +139,9 @@ class EventA(DomainEvent):
     def __init__(self, aggregate_root_id, an_event_property):
         ...
 ```
-2: Set the event_versioning annotation on the deserialisation method:
+2: Set the event_versioning annotation on the deserialisation method and add the SchemaMapper
+as the last parameter. 
+
 ```python
 class EventA(DomainEvent):
     
@@ -147,11 +149,16 @@ class EventA(DomainEvent):
     
     @staticmethod
     @event_versioning('weak-schema')
-    def deserialize(event_data):
+    def deserialize(event_data: dict, schema_mapper: SchemaMapper=None):
         """ deserialize the event for building the aggregate root """
+        mapped_data = schema_mapper.map(event_data, EventA.__dict__)
         return EventA(
-            event_data['aggregate_root_id'],
-            event_data['an_event_property'])
+            mapped_data['aggregate_root_id'],
+            mapped_data['an_event_property'])
 ```
+It's needles to say with the SchemaMapper you can map the current message against the current
+class. Hypothetically you could use different versions of your event to map data. This way you
+go back and forth.
+
 
 That's it, easy right, no upcasting needed and this works two ways.

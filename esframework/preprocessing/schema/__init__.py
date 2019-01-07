@@ -1,7 +1,4 @@
 import abc
-import inspect
-
-from esframework.domain import DomainEvent
 from esframework.exceptions import SchemaMapperException
 
 

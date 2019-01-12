@@ -9,7 +9,7 @@ class SqlDomainRecord(Base):
 
     domain_event_id = Column(String(length=36), primary_key=True, nullable=False)
     aggregate_root_id = Column(String(length=36), nullable=False)
-    version = Column(Integer, nullable=False)
+    aggregate_root_version = Column(Integer, nullable=False)
     domain_event_name = Column(String(length=255), nullable=False)
     domain_event_body = Column(JSON, nullable=False)
     store_date = Column(String(length=50), nullable=False)
@@ -24,7 +24,7 @@ class SqlDomainRecord(Base):
         return "<EventStoreRecord(" \
                "domain_event_id='%s', " \
                "aggregate_root_id='%s', " \
-               "version='%s'" \
+               "aggregate_root_version='%s'" \
                "domain_event_name='%s'" \
                "domain_event_body='%s'" \
                "store_date='%s'" \
@@ -33,7 +33,7 @@ class SqlDomainRecord(Base):
                "causation_id='%s'" \
                "event_metadata='%s'" \
                ")>" % \
-               (self.domain_event_id, self.aggregate_root_id, self.version,
+               (self.domain_event_id, self.aggregate_root_id, self.aggregate_root_version,
                 self.domain_event_name, self.domain_event_body, self.store_date,
                 self.event_date, self.correlation_id, self.causation_id,
                 self.event_metadata)

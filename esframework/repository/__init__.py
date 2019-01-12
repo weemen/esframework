@@ -61,8 +61,8 @@ class DefaultRepository(Repository):
         try:
             aggr_from_store = self.load(aggregate_root.get_aggregate_root_id())
             if not self.is_outdated(
-                    aggr_from_store.get_version(),
-                    uncommitted_events[0].get_version()):
+                    aggr_from_store.get_aggregate_root_version(),
+                    uncommitted_events[0].get_aggregate_root_version()):
                 self._store.save(uncommitted_events,
                                  aggregate_root.get_aggregate_root_id())
                 self._eventbus.emit(uncommitted_events)

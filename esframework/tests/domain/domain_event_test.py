@@ -17,9 +17,9 @@ class TestDomainEvent(unittest.TestCase):
 
     def test_it_cannot_set_version_twice(self):
         domain_event = EventA("0A919B3E-5BCB-41DC-B157-8A9E2A7198BE", "foo")
-        domain_event.set_version(1)
+        domain_event.set_aggregate_root_version(1)
         with self.assertRaises(DomainEventException) as ex:
-            domain_event.set_version(1)
+            domain_event.set_aggregate_root_version(1)
         self.assertEqual(str(ex.exception), "Version can only be set once!")
 
     def test_it_cannot_set_correlation_id_twice(self):

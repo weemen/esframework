@@ -76,7 +76,7 @@ class TestAggregateRoot(unittest.TestCase):
         ]
         aggregate = MyTestAggregate()
         aggregate.initialize_state(events)
-        self.assertEqual(aggregate.get_version(), 3)
+        self.assertEqual(aggregate.get_aggregate_root_version(), 3)
 
     def test_it_can_version_uncommitted_events(self):
         """ test if newly added events are versioned """
@@ -84,7 +84,7 @@ class TestAggregateRoot(unittest.TestCase):
         an_event_prop = 'event_a_property'
 
         aggregate = MyTestAggregate.event_a(uuid, an_event_prop)
-        self.assertEqual(aggregate.get_version(), 0)
+        self.assertEqual(aggregate.get_aggregate_root_version(), 0)
 
         uncommitted_events = aggregate.get_uncommitted_events()
-        self.assertEqual(uncommitted_events[0].get_version(), 1)
+        self.assertEqual(uncommitted_events[0].get_aggregate_root_version(), 1)

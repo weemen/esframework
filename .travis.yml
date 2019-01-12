@@ -1,8 +1,16 @@
 language: python
-python:
-  - "3.5"
-  - "3.6"
-  - "3.7-dev"
+dist: xenial
+sudo: required
+matrix:
+  include:
+  - python: "3.5"
+  - python: "3.6"
+  - python: "3.7"
+  - python: "3.8-dev"
+  fast_finish: true
+  allow_failures:
+    - python: "3.8-dev"
+
 install:
   - pip install -U setuptools
   - python setup.py install

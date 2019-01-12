@@ -42,8 +42,9 @@ class InMemoryStore(Store):
         """ Load stream from memory """
         if aggregate_root_id not in self.__store:
             raise AggregateRootIdNotFoundError(
-                'Aggregate root id does not exist',
-                aggregate_root_id)
+                'Aggregate root id does not exist: {}'.format(
+                    aggregate_root_id),
+            )
 
         return self.__store[aggregate_root_id]
 
@@ -73,8 +74,9 @@ class SQLStore(Store):
         if not records:
             """ Read event stream from relational database """
             raise AggregateRootIdNotFoundError(
-                'Aggregate root id does not exist',
-                aggregate_root_id)
+                'Aggregate root id does not exist: {}'.format(
+                    aggregate_root_id),
+                )
 
         return self.convert_to_domain_events(records)
 

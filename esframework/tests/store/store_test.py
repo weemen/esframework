@@ -76,9 +76,11 @@ class TestInMemoryStore(unittest.TestCase):
         ]
         store.save(eventstream, aggregate_root_id)
 
-        with raises(AggregateRootIdNotFoundError,
-                    message="Aggregate root id does not exist"):
+        with self.assertRaises(AggregateRootIdNotFoundError) as ex:
             store.load('108AEB44-7842-4F36-A113-60A3786670C2')
+        self.assertEqual(
+            "Aggregate root id does not exist: 108AEB44-7842-4F36-A113-60A3786670C2",
+            str(ex.exception))
 
 
 class TestSqlStore(unittest.TestCase):
@@ -176,9 +178,12 @@ class TestSqlStore(unittest.TestCase):
         ]
         store.save(eventstream, aggregate_root_id)
 
-        with raises(AggregateRootIdNotFoundError,
-                    message="Aggregate root id does not exist"):
+        with self.assertRaises(AggregateRootIdNotFoundError) as ex:
             store.load('108AEB44-7842-4F36-A113-60A3786670C2')
+
+        self.assertEqual(
+            "Aggregate root id does not exist: 108AEB44-7842-4F36-A113-60A3786670C2",
+            str(ex.exception))
 
     def test_it_can_set_correct_causation_ids(self):
         """ test if SQLStore can deal properly with causation ids """

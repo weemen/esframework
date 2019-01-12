@@ -21,7 +21,7 @@ testing_requires = ['pytest', 'pylint', 'flake8', 'pyre-check']
 
 setup(
     name='esframework',
-    version='0.0.0',  # Required
+    version='0.0.2',  # Required
     description='A base package to help python developers with ES',
     long_description="A base package to help python developers with "
                      "eventsourcing",
